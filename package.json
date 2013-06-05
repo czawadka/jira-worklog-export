@@ -1,0 +1,31 @@
+{
+    "name": "empiria.angularScenario",
+    "description": "E2E tests for Empria/Empirator",
+    "version": "0.0.1",
+    "author": {
+        "name": "Dariusz Szuksztul"
+    },
+    "repository": {
+		"type" : "git",
+		"url" : "https://svn.ydp.eu/stash/scm/EM/empiria.angularscenario.git"
+    },
+    "bugs": {
+    },
+    "main": "Gruntfile.js",
+    "engines": {
+        "node": ">=0.10.0"
+    },
+    "scripts": {
+        "test": "grunt"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "grunt-contrib-internal": "~0.4.0",
+        "grunt-contrib-clean": "~0.4",
+        "grunt": "~0.4.0",
+        "grunt-typescript": "~0.1.5",
+        "grunt-contrib-copy": "~0.4",
+        "grunt-contrib-watch": "~0.4"
+    }
+}
