@@ -6,6 +6,11 @@ module.exports = function(grunt) {
     var TARGET_DIR = BASE_DIR + "target/";
 
 	grunt.initConfig({
+        exec: {
+            run: {
+                command: "node "+TARGET_DIR+'start.js'
+            }
+        },
         typescript: {
             source: {
                 src: [SRC_DIR + 'ts/*.ts'],
@@ -34,9 +39,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-internal');
 	grunt.loadNpmTasks('grunt-typescript');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-exec');
 
 	grunt.registerTask('compile', [ 'typescript' ]);
-	grunt.registerTask('test', [ 'jshint', 'typescript', 'karma:chrome' ]);
-    grunt.registerTask('run', [ 'compile', 'typescript', 'karma:chrome' ]);
+	grunt.registerTask('test', [ 'jshint', 'compile', 'karma:chrome' ]);
+    grunt.registerTask('run', [ 'compile', 'compile', 'exec:run' ]);
 	grunt.registerTask('default', [ 'test' ]);
 };
