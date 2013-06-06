@@ -43,6 +43,6 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('compile', [ 'typescript' ]);
 	grunt.registerTask('test', [ 'jshint', 'compile', 'karma:chrome' ]);
-    grunt.registerTask('run', [ 'compile', 'compile', 'exec:run' ]);
+    grunt.registerTask('run', [ 'compile', 'exec:run' ]);
 	grunt.registerTask('default', [ 'test' ]);
 };
