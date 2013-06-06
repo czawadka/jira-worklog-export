@@ -1,17 +1,18 @@
+///<reference path="../../lib/ts/node.d.ts" />
 ///<reference path="http_client.ts" />
+import http_client = module('http_client');
 
 export class JiraRestClient {
-    client: HttpClient;
+    client: http_client.HttpClient;
 
-    constructor(opts: HttpClientOptions) {
-        this.client = new HttpClient(opts);
+    constructor(opts: http_client.HttpClientOptions) {
+        this.client = new http_client.HttpClient(opts);
     }
 
     search(jql:string, startAt?: number, maxResults?: number, fields?: string, expand?: string): any {
-        var requestOpts: HttpRequestOptions = {
+        var requestOpts: http_client.HttpRequestOptions = {
             method: "GET",
-            uri: "search"
-            ,
+            uri: "search",
             params: {
                 jql: jql,
                 startAt: startAt,

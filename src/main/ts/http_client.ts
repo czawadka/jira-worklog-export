@@ -1,10 +1,12 @@
-///<reference path="../../lib/ts/node-0.8.d.ts" />
+///<reference path="../../lib/ts/node.d.ts" />
 import url = module('url');
 import http = module('http');
 import https = module('https');
 import qs = module('querystring');
-///<reference path="../../lib/ts/Q.d.ts" />
+///<reference path="../../lib/ts/q.module.d.ts" />
+import Q = module('q');
 ///<reference path="misc.ts" />
+import misc = module('misc');
 
 export interface HttpClientOptions {
     baseUrl: string;
@@ -33,7 +35,10 @@ export class HttpClientException {
 }
 
 function requestUrlFromOptions(requestOptions: any): string {
-    var requestOptions: any = extend(requestOptions);
+    var requestOptions: any = misc.extend(requestOptions);
+    if (requestOptions.auth) {
+        delete requestOptions.auth;
+    }
     return url.format(requestOptions);
 }
 

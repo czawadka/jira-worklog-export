@@ -1,11 +1,12 @@
 ///<reference path="jira.ts" />
+import jira = module('jira');
 
 var clientOptions = {
     baseUrl:'https://jira.ydp.eu/',
     login:'bds',
     password: 'password'
 };
-var jiraClient: JiraRestClient = new JiraRestClient(clientOptions);
+var jiraClient: jira.JiraRestClient = new jira.JiraRestClient(clientOptions);
 
 jiraClient.search("project = PSS AND resolution = Unresolved", 0, 3, "*all")
     .then(function(searchResult) {
