@@ -1,21 +1,31 @@
 ///<reference path="http_client.ts" />
-require('http_client');
-import http = module("http");
 
-export class Jira extends HttpClient {
-    opts: HttpClientOptions;
+export class JiraRestClient {
+    client: HttpClient;
 
     constructor(opts: HttpClientOptions) {
-        super(opts);
+        this.client = new HttpClient(opts);
     }
 
-    search(jql:string, startAt?: number, maxResults?: number, fields?: string, expand?: string): http.ClientRequest {
-        return this.request("GET", "find", {
-            "jql": jql,
-            "startAt": startAt,
-            "maxResults": maxResults,
-            "fields": fields,
-            "expand": expand
-        });
+    search(jql:string, startAt?: number, maxResults?: number, fields?: string, expand?: string): any {
+        var requestOpts: HttpRequestOptions = {
+            method: "GET",
+            uri: "search"
+            ,
+            params: {
+                jql: jql,
+                startAt: startAt,
+                maxResults: maxResults,
+                fields: fields,
+                expand: expand
+            }
+        };
+        var responsePromise: Qpromise = this.client.request(requestOpts);
+
+        return responsePromise.then(
+            function(data) {
+                return JSON.parse(data);
+            }
+        );
     }
 }

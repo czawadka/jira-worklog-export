@@ -1,11 +1,16 @@
 ///<reference path="jira.ts" />
-require('jira');
 
-var clientOptions:HttpClientOptions = {
+var clientOptions = {
     baseUrl:'https://jira.ydp.eu/',
     login:'bds',
     password: 'password'
 };
-var jira:Jira = new Jira(clientOptions);
+var jiraClient: JiraRestClient = new JiraRestClient(clientOptions);
 
-var req = jira.search("project = PSS AND resolution = Unresolved");
+jiraClient.search("project = PSS AND resolution = Unresolved", 0, 3, "*all")
+    .then(function(searchResult) {
+        console.log("success");
+    }, null, function(event) {
+        console.log("notify: "+event.event);
+    })
+    .done();
