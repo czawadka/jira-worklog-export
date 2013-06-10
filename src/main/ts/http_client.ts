@@ -48,14 +48,10 @@ export class HttpClient {
             var responseData: string = '';
 
             request.on('response', function(response) {
-                responseDeferred.notify({event: 'request.response', request: request, response: response});
-
                 response.on('data', function(chunk) {
-                    responseDeferred.notify({event: 'response.data', request: request, response: response, chunk: chunk});
                     responseData += chunk;
                 });
                 response.on('end', function() {
-                    responseDeferred.notify({event: 'response.end', request: request, response: response});
                     if (response.statusCode!=200) {
                         responseDeferred.reject(response);
                     }
@@ -64,8 +60,6 @@ export class HttpClient {
                 response.on('error', responseDeferred.reject);
             });
             request.on('error', requestDeferred.reject);
-
-            requestDeferred.notify({event: 'request.created', request: request});
 
             request.end(body); // start & end request
 
