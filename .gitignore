@@ -2,3 +2,5 @@
 node_modules/
 target/
 *.iml
+out.json
+out.txt
