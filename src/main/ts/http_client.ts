@@ -20,35 +20,12 @@ export interface HttpRequestOptions {
     params?: any;
 }
 
-export class HttpClientException {
-    msg: string;
-    reason: any;
-
-    constructor(msg: string, reason?: any) {
-        this.msg = msg;
-        this.reason = reason;
-    }
-
-    toString(): string {
-        return this.msg;
-    }
-}
-
 function requestUrlFromOptions(requestOptions: any): string {
     var requestOptions: any = misc.extend(requestOptions);
     if (requestOptions.auth) {
         delete requestOptions.auth;
     }
     return url.format(requestOptions);
-}
-
-export class RequestException extends HttpClientException {
-    requestOptions: any;
-
-    constructor(requestOptions: any, msg: string, reason?: any) {
-        super("Request '"+requestUrlFromOptions(requestOptions)+"': "+msg);
-        this.requestOptions = requestOptions;
-    }
 }
 
 export class HttpClient {
@@ -73,16 +50,15 @@ export class HttpClient {
             request.on('response', function(response) {
                 responseDeferred.notify({event: 'request.response', request: request, response: response});
 
-                if (response.statusCode!=200) {
-                    throw new RequestException(libOptions, "Status code "+response.statusCode, response);
-                }
-
                 response.on('data', function(chunk) {
                     responseDeferred.notify({event: 'response.data', request: request, response: response, chunk: chunk});
                     responseData += chunk;
                 });
                 response.on('end', function() {
                     responseDeferred.notify({event: 'response.end', request: request, response: response});
+                    if (response.statusCode!=200) {
+                        responseDeferred.reject(response);
+                    }
                     responseDeferred.resolve(responseData);
                 });
                 response.on('error', responseDeferred.reject);
@@ -133,8 +109,7 @@ export class HttpClient {
     private prepareLibOptions(requestOptions: HttpRequestOptions): any {
         requestOptions = this.normalizeRequestOptions(requestOptions);
 
-        var requestUrl: string = this.prepareRequestUrl(requestOptions),
-            body: string = this.prepareRequestBody(requestOptions);
+        var requestUrl: string = this.prepareRequestUrl(requestOptions);
 
         var libOptions: any = url.parse(requestUrl);
         libOptions.method = requestOptions.method;
