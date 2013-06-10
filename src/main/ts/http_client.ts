@@ -20,14 +20,6 @@ export interface HttpRequestOptions {
     params?: any;
 }
 
-function requestUrlFromOptions(requestOptions: any): string {
-    var requestOptions: any = misc.extend(requestOptions);
-    if (requestOptions.auth) {
-        delete requestOptions.auth;
-    }
-    return url.format(requestOptions);
-}
-
 export class HttpClient {
     opts: HttpClientOptions;
 
@@ -71,7 +63,7 @@ export class HttpClient {
 
     private normalizeRequestOptions(requestOptions: HttpRequestOptions): HttpRequestOptions {
         requestOptions.method = (requestOptions.method || "GET").toUpperCase();
-        requestOptions.params = this.removeUndefinedParams(requestOptions.params)
+        requestOptions.params = this.removeUndefinedParams(requestOptions.params);
 
         return requestOptions;
     }
