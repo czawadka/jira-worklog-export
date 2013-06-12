@@ -144,11 +144,10 @@ export class JiraRestClient {
             isoDateTo: string = dateTo.toISOString();
 
         jql = this.whereWorklogBetween(jql, dateFrom, dateTo);
-        console.log(jql);
+        console.error(jql);
 
         function filterIssues(issues: Issue[]): Issue[] {
             return issues.filter(function(issue: Issue) {
-                //console.log('issue ' + JSON.stringify(issue));
                 issue.fields.worklog.worklogs = issue.fields.worklog.worklogs.filter(function(worklog: Worklog){
                    return (worklog.started >= isoDateFrom || worklog.started <= isoDateTo);
                 });
@@ -157,8 +156,8 @@ export class JiraRestClient {
         }
 
         function processWorklogChunk(searchResults: SearchResults): any /* Qpromise || filteredIssues: Issue[] */ {
-            console.log('processing issues ' + searchResults.startAt
-                + '-' + (searchResults.startAt + searchResults.issues.length - 1)
+            console.error('Processing issues ' + (searchResults.startAt+1)
+                + '-' + (searchResults.startAt + searchResults.issues.length)
                 + '/' + searchResults.total);
             var filteredIssues: Issue[] = filterIssues(searchResults.issues);
 
@@ -177,7 +176,7 @@ export class JiraRestClient {
             initialStartAt = 0;
 
         function nextWorklogChunk(startAt: number, bulkSize: number): Qpromise /* filteredIssues: Issue[] */ {
-            console.log("Search at "+(startAt+1)+"-"+(startAt+bulkSize));
+            console.error("Request issues "+(startAt+1)+"-"+(startAt+bulkSize));
             return self.search(jql, startAt, bulkSize, "summary,worklog,-attachment", "")
                 .then(
                     processWorklogChunk,
