@@ -1,5 +1,6 @@
 ///<reference path="../../lib/ts/node.d.ts" />
 import http = module('http');
+import util = module('util');
 ///<reference path="http_client.ts" />
 import http_client = module('http_client');
 ///<reference path="misc.ts" />
@@ -63,9 +64,28 @@ export function jqlDate(date: Date): string {
         + fmtNumber(date.getHours(), 2)
         + ":"
         + fmtNumber(date.getMinutes(), 2)
-//        + ":"
-//        + fmtNumber(date.getSeconds(), 2)
         ;
+}
+
+export function jqlField(jql: string, fieldName: string, oper: string, value: any): string {
+    if (typeof(value) == "undefined") {
+        return jql;
+    }
+
+    if (util.isDate(value)) {
+        value = "'" + jqlDate(value) + "'";
+    } else if (value === null) {
+        value = "NULL";
+    } else if (typeof (value) == "numeric") {
+        // do not escape numeric
+    } else {
+        // assume string
+        value = "'" + value.toString().replace("'", "\\'") + "'";
+    }
+    if (jql) {
+        jql += ' AND ';
+    }
+    return jql + fieldName + " " + oper + " " + value;
 }
 
 
@@ -109,18 +129,21 @@ export class JiraRestClient {
         );
     }
 
-    listWorklogs(dateFrom: Date, dateTo?: Date): Qpromise /* filteredIssues: Issue[] */ {
+    whereWorklogBetween(jql: string, dateFrom: Date, dateTo?: Date): string {
+        // FIXME: field 'updated' shows only *last* modification date, we need all modification dates
+        // We should use rather workLoggedBetween() from JQL Tricks or something similar
+        return jqlField(jqlField(jql, "updated", ">=", dateFrom), "updated", "<=", dateTo);
+    }
+
+    listWorklogs(jql: string, dateFrom: Date, dateTo?: Date): Qpromise /* filteredIssues: Issue[] */ {
 
         dateTo = dateTo || new Date();
 
         var self: JiraRestClient = this,
-            jql: string = '',
             isoDateFrom: string = dateFrom.toISOString(),
             isoDateTo: string = dateTo.toISOString();
 
-        jql += "updated >= '" + jqlDate(dateFrom) + "'";
-        jql += " AND updated <= '" + jqlDate(dateTo) + "'";
-        jql += " ORDER BY key";
+        jql = this.whereWorklogBetween(jql, dateFrom, dateTo);
         console.log(jql);
 
         function filterIssues(issues: Issue[]): Issue[] {
@@ -151,7 +174,7 @@ export class JiraRestClient {
         }
 
         var initialBulkSize = 100,
-            initialStartAt = 300;
+            initialStartAt = 0;
 
         function nextWorklogChunk(startAt: number, bulkSize: number): Qpromise /* filteredIssues: Issue[] */ {
             console.log("Search at "+(startAt+1)+"-"+(startAt+bulkSize));
