@@ -149,7 +149,7 @@ export class JiraRestClient {
         function filterIssues(issues: Issue[]): Issue[] {
             return issues.filter(function(issue: Issue) {
                 issue.fields.worklog.worklogs = issue.fields.worklog.worklogs.filter(function(worklog: Worklog){
-                   return (worklog.started >= isoDateFrom || worklog.started <= isoDateTo);
+                    return (worklog.started >= isoDateFrom && worklog.started <= isoDateTo);
                 });
                 return issue.fields.worklog.worklogs.length > 0;
             });
