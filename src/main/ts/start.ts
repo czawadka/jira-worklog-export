@@ -17,27 +17,28 @@ interface Config {
 }
 
 var configFile = path.resolve(process.argv[2] || './config');
-console.log('loading ' + configFile);
+console.error('loading ' + configFile);
 var config: Config = require(configFile);
 
 var jiraClient: jira.JiraRestClient = new jira.JiraRestClient(config.jira);
 
-for(var projectKey in config.worklog.projects) {
-    var jql = config.worklog.projects[projectKey];
+for(var key in config.worklog.projects) {
+    (function() {
+        var projectKey = key;
+        var jql = config.worklog.projects[projectKey];
 
-    jiraClient
-        .listWorklogs(jql, config.worklog.dateFrom, config.worklog.dateTo)
-        .then(function(issues: jira.Issue[]) {
-
-            issues.forEach(function(issue: jira.Issue) {
-                issue.fields.worklog.worklogs.forEach(function(worklog: jira.Worklog){
-                    console.log(projectKey + "," + issue.key + "," + worklog.author.name + ","
-                        + worklog.started + "," + worklog.timeSpentSeconds);
+        jiraClient
+            .listWorklogs(jql, config.worklog.dateFrom, config.worklog.dateTo)
+            .then(function(issues: jira.Issue[]) {
+                issues.forEach(function(issue: jira.Issue) {
+                    issue.fields.worklog.worklogs.forEach(function(worklog: jira.Worklog){
+                        console.log(projectKey + "," + issue.key + "," + worklog.author.name + ","
+                            + worklog.started + "," + worklog.timeSpentSeconds);
+                    });
                 });
-            });
 
-        })
-        .done();
-
+            })
+            .done();
+        })();
 };
 
