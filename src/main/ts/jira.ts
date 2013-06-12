@@ -67,28 +67,6 @@ export function jqlDate(date: Date): string {
         ;
 }
 
-export function jqlField(jql: string, fieldName: string, oper: string, value: any): string {
-    if (typeof(value) == "undefined") {
-        return jql;
-    }
-
-    if (util.isDate(value)) {
-        value = "'" + jqlDate(value) + "'";
-    } else if (value === null) {
-        value = "NULL";
-    } else if (typeof (value) == "numeric") {
-        // do not escape numeric
-    } else {
-        // assume string
-        value = "'" + value.toString().replace("'", "\\'") + "'";
-    }
-    if (jql) {
-        jql += ' AND ';
-    }
-    return jql + fieldName + " " + oper + " " + value;
-}
-
-
 export class JiraRestClient {
     client: http_client.HttpClient;
 
@@ -130,9 +108,12 @@ export class JiraRestClient {
     }
 
     whereWorklogBetween(jql: string, dateFrom: Date, dateTo?: Date): string {
-        // FIXME: field 'updated' shows only *last* modification date, we need all modification dates
-        // We should use rather workLoggedBetween() from JQL Tricks or something similar
-        return jqlField(jqlField(jql, "updated", ">=", dateFrom), "updated", "<=", dateTo);
+        // FIXME: Field 'updated' shows only *last* modification date, we need all modification dates.
+        // We should use rather workLoggedBetween() from JQL Tricks (license required) or something similar.
+        // As workaround we are fetching all issues no matter if they were modified in given period of time.
+        // should be something like: return jql + " AND workLoggedBetween('"+ jqlDate(dateFrom) + "', '" + jqlDate(dateTo) + "')";
+        // but is as follows... :(
+        return jql;
     }
 
     listWorklogs(jql: string, dateFrom: Date, dateTo?: Date): Qpromise /* filteredIssues: Issue[] */ {

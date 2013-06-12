@@ -11,6 +11,6 @@ project(from config),issueKey,worklog.author,worklog.started,worklog.timeSpentSe
 # FIXME
 ## Jira.whereWorklogBetween()
 
-Current implementation of Jira.whereWorklogBetween() uses `updated` field. But field `updated` shows only
-*last* modification date, we need all modification dates. We should use rather `workLoggedBetween()`
-from JQL Tricks or something similar (license required).
+Field 'updated' shows only *last* modification date, we need all modification dates.
+We should use rather workLoggedBetween() from JQL Tricks (license required) or something similar.
+As workaround we are fetching all issues no matter if they were modified in given period of time.
